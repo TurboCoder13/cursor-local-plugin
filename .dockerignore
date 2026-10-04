@@ -1,0 +1,9 @@
+.git
+.lintro
+build
+INSTALLATION.md
+DASHBOARD.md
+VALIDATION.md
+*.log
+.env
+.env.*

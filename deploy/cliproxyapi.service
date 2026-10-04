@@ -1,0 +1,17 @@
+[Unit]
+Description=CLIProxyAPI with local Cursor provider
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/state/cliproxyapi
+ExecStart=%h/.local/bin/cliproxyapi -config %h/.config/cliproxyapi/config.yaml
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

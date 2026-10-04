@@ -1,0 +1,39 @@
+---
+name: Native platform checks
+
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: go.mod
+      - name: Compile and check against the pinned CPA release
+        run: bash scripts/ci/check.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Save native build
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cursor-local-${{ matrix.os }}
+          path: |
+            build/*/*/cursor-local.*
+            build/*/*/cursor-login*

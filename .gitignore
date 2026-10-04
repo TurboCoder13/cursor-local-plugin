@@ -1,0 +1,12 @@
+/build/
+/coverage.out
+/.lintro/
+/INSTALLATION.md
+/DASHBOARD.md
+/VALIDATION.md
+/config.yaml
+/auth/
+/logs/
+.env
+.env.*
+*.before-cursor-*

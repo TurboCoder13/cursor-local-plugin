@@ -1,0 +1,6 @@
+---
+# Keep prose readable without breaking command examples or mapping tables.
+MD013:
+  line_length: 80
+  tables: false
+  code_blocks: false

@@ -1,0 +1,3 @@
+# Generated artifacts only; implementation and test source remain in scope.
+.lintro/
+build/

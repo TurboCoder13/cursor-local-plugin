@@ -1,0 +1,14 @@
+# Linux acceptance image: compile the plugin, then load it in the real CPA host.
+FROM golang:1.26-bookworm@sha256:a688600ca24f8a4d3ca77f95b0dd40704a9fc787c826660eb7ba0b641b8b175d AS builder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN --mount=type=cache,target=/root/.cache/go-build make build check-go
+
+FROM ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254
+RUN apt-get update && apt-get install -y --no-install-recommends ruby=1:3.2~ubuntu1 ruby-minitest=5.22.2-1 ca-certificates=20260601~24.04.1 && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY --from=builder /src /src
+RUN ruby tools/platform-test.rb
+CMD ["ruby", "tools/host-check.rb", "--binary", "/host/cliproxyapi"]
