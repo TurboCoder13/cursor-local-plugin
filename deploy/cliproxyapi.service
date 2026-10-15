@@ -6,9 +6,15 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=%h/.local/state/cliproxyapi
+# Bind host is the Tailscale IPv4. That address is assigned after user
+# services start and can flap once during a "major link change". The binary
+# then logs "bind: cannot assign requested address" and exits 0, so
+# Restart=on-failure leaves it dead across reboot.
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 30); do addr=$(/usr/bin/tailscale ip -4 2>/dev/null) && [ -n "$addr" ] && /sbin/ip -4 addr show tailscale0 2>/dev/null | grep -q "inet $addr/" && exit 0; sleep 1; done; echo "tailscale IPv4 not assigned on tailscale0" >&2; exit 1'
 ExecStart=%h/.local/bin/cliproxyapi -config %h/.config/cliproxyapi/config.yaml
-Restart=on-failure
+Restart=always
 RestartSec=5
+TimeoutStartSec=45
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true

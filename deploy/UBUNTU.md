@@ -209,10 +209,12 @@ sudo loginctl enable-linger "$USER"
 systemctl --user status cliproxyapi
 ```
 
-The service restarts on failure and writes logs in its working directory.
-Log viewing is enabled in the generated CPA config. The unit waits for
-`network-online.target`; if the Tailscale address is not yet assigned at boot
-and the bind fails, the restart loop picks it up a few seconds later.
+The service restarts whenever the process exits (including exit 0) and writes
+logs in its working directory. Log viewing is enabled in the generated CPA
+config. `ExecStartPre` waits for a Tailscale IPv4 on `tailscale0` because
+`network-online.target` does not; if the address still flaps and the bind
+fails, CLIProxyAPI logs `cannot assign requested address` but exits 0, and
+`Restart=always` brings it back a few seconds later.
 
 ## Sign in from another machine
 
@@ -270,14 +272,19 @@ The laptop is also the box that agents run on, so threads survive closing the
 MacBook. Install the CLIs, then the T3 Code server:
 
 ```sh
-bun install -g @anthropic-ai/claude-code @openai/codex
-bunx t3 serve --tailscale
+curl -fsSL https://claude.ai/install.sh | bash
+curl -fsSL https://chatgpt.com/codex/install.sh | bash
+bun install -g t3
+bunx t3 serve --tailscale-serve
 ```
 
-`t3 serve` exposes the machine over the tailnet so the desktop and mobile
-apps can start threads on it without T3's relay. See `bunx t3 serve --help`
-for the current flags. Run it as a user systemd service in the same way as
-the proxy so it comes back after a reboot. Threads start in their own git
+`t3 serve --tailscale-serve` binds to loopback and publishes it over HTTPS
+on the tailnet through Tailscale Serve, so the desktop and mobile apps can
+start threads on it without T3's relay. Serve and HTTPS certificates must
+be enabled once for the tailnet in the Tailscale admin console; T3 prints
+the approval link if they are not. Run it as a user systemd service in the
+same way as the proxy so it comes back after a reboot (the unit lives in
+turbo-dotfiles under `machines/roolandweg-45-ai-lab/systemd`). Threads start in their own git
 worktrees by default; let the agents sort out branch collisions themselves.
 
 Set the data-sharing opt-out in both Claude Code and Codex settings on each
