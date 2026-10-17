@@ -1,5 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cursor Local</title>
@@ -7,9 +8,11 @@
 <style>
 :root{color-scheme:light dark;font-family:system-ui,sans-serif}body{max-width:1000px;margin:40px auto;padding:0 24px}header{display:flex;justify-content:space-between;align-items:center}h1{font-weight:550}button,input,select{font:inherit;padding:8px;border:1px solid #8888;border-radius:5px}button{cursor:pointer}label{display:inline-flex;gap:8px;align-items:center}section{border:1px solid #8885;padding:22px;margin:22px 0;border-radius:8px}p{line-height:1.5}small{opacity:.75}.models{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:20px 0}.toolbar{display:flex;gap:10px;flex-wrap:wrap}.metrics{display:flex;gap:22px;flex-wrap:wrap}#notice{min-height:24px}input[type=password]{width:280px;max-width:100%;box-sizing:border-box}.toolbar>label{max-width:100%;flex-wrap:wrap}pre{white-space:pre-wrap}footer{margin:30px 0}
 </style>
+</head>
+<body>
 <header><h1>Cursor Local</h1><select id="language" aria-label="Language"><option value="en">English</option><option value="zh">中文</option></select></header>
 <p id="intro"></p>
-<div class="toolbar"><label><span id="keyLabel"></span><input id="key" aria-labelledby="keyLabel" type="password" autocomplete="off"></label><button id="load"></button><button id="lock"></button></div>
+<div class="toolbar"><label><span id="keyLabel"></span><!-- [html-validate-disable-next autocomplete-password -- the management key is held in memory only; password managers must not store it] --><input id="key" aria-labelledby="keyLabel" type="password" autocomplete="off"></label><button id="load" type="button">Refresh</button><button id="lock" type="button">Lock</button></div>
 <p id="notice" role="status"></p><div id="accounts"></div><section id="metrics" hidden></section><footer><small id="privacy"></small></footer>
 <script>
 'use strict';
@@ -32,4 +35,5 @@ byId('load').onclick=async()=>{const stamp=revision;byId('load').disabled=true;n
 byId('lock').onclick=()=>{revision++;for(const controller of pending)controller.abort();byId('key').value='';data=null;render();notice(t('locked'));};
 render();
 </script>
+</body>
 </html>
