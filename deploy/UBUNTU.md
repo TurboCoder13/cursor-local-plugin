@@ -284,8 +284,9 @@ start threads on it without T3's relay. Serve and HTTPS certificates must
 be enabled once for the tailnet in the Tailscale admin console; T3 prints
 the approval link if they are not. Run it as a user systemd service in the
 same way as the proxy so it comes back after a reboot (the unit lives in
-turbo-dotfiles under `machines/roolandweg-45-ai-lab/systemd`). Threads start in their own git
-worktrees by default; let the agents sort out branch collisions themselves.
+turbo-dotfiles under `machines/roolandweg-45-ai-lab/systemd`). Threads start
+in their own git worktrees by default; let the agents sort out branch
+collisions themselves.
 
 Set the data-sharing opt-out in both Claude Code and Codex settings on each
 account after sign-in.
