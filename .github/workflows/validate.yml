@@ -10,6 +10,26 @@ permissions:
   contents: read
 
 jobs:
+  workflow-lint:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check workflows with Lintro Actionlint
+        run: >-
+          docker run --rm
+          --user "$(id -u):$(id -g)"
+          --env HOME=/tmp
+          --env LINTRO_AI_ENABLED=0
+          --env LINTRO_AI_REVIEW=0
+          --mount "type=bind,source=$PWD,target=/work"
+          --workdir /work
+          ghcr.io/lgtm-hq/py-lintro@sha256:f7c3b4a5f9447ce12879c4b92f3ec7097aa480c925a44a04bc5358dfd70237ed
+          chk .github/workflows --tools actionlint --output-format json --no-art
+
   linux-container:
     runs-on: ubuntu-26.04
     timeout-minutes: 20
