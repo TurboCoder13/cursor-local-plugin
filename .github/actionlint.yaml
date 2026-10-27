@@ -1,0 +1,8 @@
+---
+# Ubuntu 26.04 is GA: https://github.com/actions/runner-images/issues/14747
+# Actionlint 1.7.12 in the pinned Lintro image predates this hosted label.
+# Its custom-label schema is named self-hosted-runner; this does not select
+# self-hosted execution. Remove the entry once the pinned tool knows the label.
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04
