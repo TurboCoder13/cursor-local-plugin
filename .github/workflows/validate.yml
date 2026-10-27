@@ -10,6 +10,28 @@ permissions:
   contents: read
 
 jobs:
+  linux-container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Build the Linux acceptance image
+        run: >-
+          docker build --file deploy/Dockerfile.linux-check
+          --tag cursor-local-linux-check .
+      - name: Fetch the checksum-verified pinned CPA runtime
+        run: ruby tools/fetch-runtime.rb
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Load the native plugin in the container
+        run: >-
+          docker run --rm
+          --mount "type=bind,src=$PWD/build/runtime,dst=/host,readonly"
+          cursor-local-linux-check
+
   native:
     strategy:
       fail-fast: false

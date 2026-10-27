@@ -7,7 +7,7 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/go-build make build check-go
 
 FROM ubuntu:26.04@sha256:19fcd1bf268f02b60aca3bd30bd8a6d9a11759a430e32921833e65f16d87348a
-RUN apt-get update && apt-get install -y --no-install-recommends ruby=1:3.2~ubuntu1 ruby-minitest=5.22.2-1 ca-certificates=20260601~24.04.1 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends ruby=1:3.3build1 ruby-minitest=5.26.1-1 ca-certificates=20260816ubuntu0.26.04.1 && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY --from=builder /src /src
 RUN ruby tools/platform-test.rb
