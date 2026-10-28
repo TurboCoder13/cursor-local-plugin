@@ -115,6 +115,32 @@ class PortabilityTest < Minitest::Test
     assert_raises(RuntimeError) { settings.request('/v1/models', key: 'fixture') }
   end
 
+  def test_all_checks_gate_is_dedicated_read_only_and_pinned
+    workflows = Dir.glob(File.expand_path('../.github/workflows/*.{yml,yaml}', __dir__))
+    callers = workflows.select { |path| File.read(path).include?('/reusable-all-checks-gate.yml@') }
+    assert_equal ['all-checks-gate.yml'], callers.map { |path| File.basename(path) }
+    gate = YAML.safe_load(File.read(callers.fetch(0)))
+    assert_equal ['gate'], gate.fetch('jobs').keys
+    assert_equal({}, gate.fetch('permissions'))
+    job = gate.fetch('jobs').fetch('gate')
+    assert_match %r{\Algtm-hq/lgtm-ci/\.github/workflows/reusable-all-checks-gate\.yml@[0-9a-f]{40}\z}, job.fetch('uses')
+    assert_equal({'egress-policy' => 'block'}, job.fetch('with'))
+    assert_equal({'actions' => 'read', 'checks' => 'read', 'contents' => 'read', 'statuses' => 'read'}, job.fetch('permissions'))
+    assert_equal ['permissions', 'uses', 'with'], job.keys.sort
+  end
+
+  def test_all_checks_gate_covers_validation_events_without_cancelling_main
+    path = File.expand_path('../.github/workflows/all-checks-gate.yml', __dir__)
+    assert File.file?(path), 'the dedicated all-checks gate workflow is required'
+    gate = YAML.safe_load(File.read(path))
+    events = gate.fetch('on')
+    assert_equal ['pull_request', 'push'], events.keys.sort
+    assert_equal ['opened', 'synchronize', 'reopened', 'ready_for_review'].sort, events.fetch('pull_request').fetch('types').sort
+    assert_equal({'branches' => ['main']}, events.fetch('push'))
+    assert_equal 'all-checks-gate-${{ github.event.pull_request.number || github.run_id }}', gate.fetch('concurrency').fetch('group')
+    assert_equal "${{ github.ref != 'refs/heads/main' }}", gate.fetch('concurrency').fetch('cancel-in-progress')
+  end
+
   private
 
   def fixture(dir)
