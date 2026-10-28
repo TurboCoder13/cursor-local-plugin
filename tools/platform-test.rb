@@ -124,7 +124,7 @@ class PortabilityTest < Minitest::Test
     assert_equal({}, gate.fetch('permissions'))
     job = gate.fetch('jobs').fetch('gate')
     assert_match %r{\Algtm-hq/lgtm-ci/\.github/workflows/reusable-all-checks-gate\.yml@[0-9a-f]{40}\z}, job.fetch('uses')
-    assert_equal({'egress-policy' => 'block'}, job.fetch('with'))
+    assert_equal({'egress-policy' => 'audit'}, job.fetch('with'))
     assert_equal({'actions' => 'read', 'checks' => 'read', 'contents' => 'read', 'statuses' => 'read'}, job.fetch('permissions'))
     assert_equal ['permissions', 'uses', 'with'], job.keys.sort
   end
