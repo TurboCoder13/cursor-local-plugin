@@ -22,7 +22,7 @@ concurrency:
 jobs:
   gate:
     # yamllint disable-line rule:line-length
-    uses: lgtm-hq/lgtm-ci/.github/workflows/reusable-all-checks-gate.yml@2097a900753e3e5ad0e336483501b278e99855ae  # v0.78.1
+    uses: lgtm-hq/lgtm-ci/.github/workflows/reusable-all-checks-gate.yml@614c5ad1fc91d742baed959643bdd1f261a71210  # v0.79.1
     with:
       egress-policy: audit  # TEMP: lgtm-hq/lgtm-ci#1207
     permissions:
